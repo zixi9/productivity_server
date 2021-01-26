@@ -1,5 +1,7 @@
 package com.wei.productivity.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,7 +21,11 @@ public class TimeBlockParam {
 	@NotEmpty
 	private String target;
 	@NotNull
+	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+	@JsonProperty(value = "begin_time")
 	private Date beginTime;
+	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+	@JsonProperty(value = "end_time")
 	private Date endTime;
 
 	@NotNull

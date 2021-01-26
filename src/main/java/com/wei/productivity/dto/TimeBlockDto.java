@@ -1,11 +1,11 @@
 package com.wei.productivity.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wei.productivity.domain.TimeBlock;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
 import java.util.Date;
 
 @Data
@@ -22,11 +22,13 @@ public class TimeBlockDto {
 	private String comment;
 
 	@JsonProperty(value = "begin_time")
+	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	private Date beginTime;
 
 	private Integer planInterval;
 
 	@JsonProperty(value = "end_time")
+	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	private Date endTime;
 
 	public static TimeBlockDto parseDomain(TimeBlock timeBlock) {
