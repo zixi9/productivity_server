@@ -8,7 +8,7 @@ import lombok.Setter;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -23,13 +23,14 @@ public class TimeBlockParam {
 	@NotNull
 	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	@JsonProperty(value = "begin_time")
-	private Date beginTime;
+	private LocalDateTime beginTime;
 	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	@JsonProperty(value = "end_time")
-	private Date endTime;
+	private LocalDateTime endTime;
 
 	@NotNull
 	@Min(0)
+	@JsonProperty(value = "plan_interval")
 	private int planInterval;
 
 	private String comment;

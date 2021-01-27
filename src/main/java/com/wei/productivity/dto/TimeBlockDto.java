@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Data
 public class TimeBlockDto {
@@ -23,13 +23,14 @@ public class TimeBlockDto {
 
 	@JsonProperty(value = "begin_time")
 	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-	private Date beginTime;
+	private LocalDateTime beginTime;
 
+	@JsonProperty(value = "plan_interval")
 	private Integer planInterval;
 
 	@JsonProperty(value = "end_time")
 	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-	private Date endTime;
+	private LocalDateTime endTime;
 
 	public static TimeBlockDto parseDomain(TimeBlock timeBlock) {
 		TimeBlockDto timeBlockDto = new TimeBlockDto();

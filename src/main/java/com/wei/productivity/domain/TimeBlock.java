@@ -6,7 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -28,11 +28,11 @@ public class TimeBlock {
 	private String comment;
 
 	@Column(name = "begin_time", nullable = false)
-	private Date beginTime;
+	private LocalDateTime beginTime;
 
 	@Column(name = "plan_interval")
 	private Integer planInterval;
 
 	@Column(name = "end_time")
-	private Date endTime;
+	private LocalDateTime endTime;
 }

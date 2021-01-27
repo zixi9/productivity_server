@@ -7,22 +7,27 @@ import com.wei.productivity.dto.TimeBlockDto;
 import com.wei.productivity.dto.TimeBlockParam;
 import com.wei.productivity.exception.TimeBlockNotExistException;
 import com.wei.productivity.service.TimeBlockService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/productivity/u1/time_block")
 public class TimeBlockController {
+	Logger logger = LoggerFactory.getLogger(TimeBlockController.class);
 	@Autowired
 	private TimeBlockService timeBlockService;
 
 	@PostMapping(path = "")
 	public CommonResult<TimeBlockDto> addTimeBlock(@RequestBody TimeBlockParam timeBlockParam) {
+	    logger.debug(timeBlockParam.toString());
 		return CommonResult.success(TimeBlockDto.parseDomain(timeBlockService.add(timeBlockParam)));
 	}
 
@@ -39,20 +44,22 @@ public class TimeBlockController {
 
 	@GetMapping(path = "")
 	public CommonResult<List<TimeBlockDto>> getByDate(
-			@RequestParam(name = "date", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date date,
-			@RequestParam(name = "start", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date start,
-			@RequestParam(name = "end", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date end) {
+			@RequestParam(name = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+			@RequestParam(name = "start", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
+			@RequestParam(name = "end", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end) {
 		if (date == null && (start == null || end == null)) {
 			return CommonResult.failed(ResultCode.VALIDATE_FAILED, "should have start and end without date");
 		}
+		logger.debug("get by Date params: " + start.toString() + "  " + end.toString());
 		List<TimeBlockDto> resList = new ArrayList<>();
 		List<TimeBlock> blockList = new ArrayList<>();
 		if (date != null) {
-			blockList = timeBlockService.getByDate(date);
+			blockList = timeBlockService.getByDate(date.atStartOfDay());
 		} else {
-			blockList = timeBlockService.getByDateRange(start, end);
+			blockList = timeBlockService.getByDateRange(start.atStartOfDay(), end.atStartOfDay());
 		}
 		for (TimeBlock t : blockList) {
+			logger.debug("get time block: " + t.toString());
 			resList.add(TimeBlockDto.parseDomain(t));
 		}
 		return CommonResult.success(resList);

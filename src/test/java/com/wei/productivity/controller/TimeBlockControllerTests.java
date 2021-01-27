@@ -2,6 +2,7 @@ package com.wei.productivity.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.wei.productivity.common.CommonResult;
 import com.wei.productivity.common.ResultCode;
 import com.wei.productivity.dao.TimeBlockRepository;
@@ -19,10 +20,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -64,10 +65,11 @@ public class TimeBlockControllerTests {
 		timeBlockParam.setCategory("test category");
 		timeBlockParam.setTarget("test target");
 		timeBlockParam.setDescription("test description");
-		timeBlockParam.setBeginTime(new SimpleDateFormat("yyyy-MM-dd").parse("2020-01-22"));
+		timeBlockParam.setBeginTime(LocalDateTime.parse("2021-01-22T00:00:00"));
 		timeBlockParam.setPlanInterval(25);
 
 		ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(new JavaTimeModule());
 
 		String resultStr = this.mockMvc
 				.perform(post("/api/productivity/u1/time_block").contentType(MediaType.APPLICATION_JSON)
@@ -94,10 +96,11 @@ public class TimeBlockControllerTests {
 		timeBlockParam.setCategory("test category");
 		timeBlockParam.setTarget("test target");
 		timeBlockParam.setDescription("test description");
-		timeBlockParam.setBeginTime(new SimpleDateFormat("yyyy-MM-dd").parse("2021-01-22"));
+		timeBlockParam.setBeginTime(LocalDateTime.parse("2021-01-22T00:00:00"));
 		timeBlockParam.setPlanInterval(25);
 
 		ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(new JavaTimeModule());
 
 		String resultStr = this.mockMvc
 				.perform(post(String.format("/api/productivity/u1/time_block/u1/%s", "NotExistTimeBlock"))
@@ -118,7 +121,7 @@ public class TimeBlockControllerTests {
 		timeBlockParam.setCategory("test category");
 		timeBlockParam.setTarget("test target");
 		timeBlockParam.setDescription("test description");
-		timeBlockParam.setBeginTime(new SimpleDateFormat("yyyy-MM-dd").parse("2021-01-22"));
+		timeBlockParam.setBeginTime(LocalDateTime.parse("2021-01-22T00:00:00"));
 		timeBlockParam.setPlanInterval(25);
 		var timeBlock = timeBlockService.add(timeBlockParam);
 		generatedIdList.add(timeBlock.getId());
@@ -127,11 +130,12 @@ public class TimeBlockControllerTests {
 		updateTimeBlockParam.setCategory("updated category");
 		updateTimeBlockParam.setDescription("updated description");
 		updateTimeBlockParam.setTarget("updated target");
-		updateTimeBlockParam.setBeginTime(new SimpleDateFormat("yyyy-MM-dd").parse("2021-01-22"));
-		updateTimeBlockParam.setEndTime(new SimpleDateFormat("yyyy-MM-dd").parse("2021-01-23"));
+		updateTimeBlockParam.setBeginTime(LocalDateTime.parse("2021-01-22T00:00:00"));
+		updateTimeBlockParam.setEndTime(LocalDateTime.parse("2021-01-23T00:00:00"));
 		updateTimeBlockParam.setPlanInterval(30);
 
 		ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(new JavaTimeModule());
 
 		String resultStr = this.mockMvc
 				.perform(post(String.format("/api/productivity/u1/time_block/u1/%s", timeBlock.getId()))
@@ -154,7 +158,7 @@ public class TimeBlockControllerTests {
 		timeBlock1.setCategory("test category 1");
 		timeBlock1.setTarget("test target 1");
 		timeBlock1.setDescription("test description 1");
-		timeBlock1.setBeginTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse("2021-01-21T10:01:01"));
+		timeBlock1.setBeginTime(LocalDateTime.parse("2021-01-21T10:01:01", DateTimeFormatter.ISO_DATE_TIME));
 		timeBlock1.setPlanInterval(25);
 		timeBlock1 = timeBlockRepository.save(timeBlock1);
 		generatedIdList.add(timeBlock1.getId());
@@ -164,8 +168,8 @@ public class TimeBlockControllerTests {
 		timeBlock2.setCategory("test category 2");
 		timeBlock2.setTarget("test target 2");
 		timeBlock2.setDescription("test description 2");
-		timeBlock2.setBeginTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse("2021-01-22T11:11:11"));
-		timeBlock2.setEndTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse("2021-01-22T12:00:00"));
+		timeBlock2.setBeginTime(LocalDateTime.parse("2021-01-22T11:11:11", DateTimeFormatter.ISO_DATE_TIME));
+		timeBlock2.setEndTime(LocalDateTime.parse("2021-01-22T12:00:00", DateTimeFormatter.ISO_DATE_TIME));
 		timeBlock2.setPlanInterval(30);
 		timeBlock2 = timeBlockRepository.save(timeBlock2);
 		// add无法添加结束时间等
@@ -176,8 +180,8 @@ public class TimeBlockControllerTests {
 		timeBlock3.setCategory("test category 3");
 		timeBlock3.setTarget("test target 3");
 		timeBlock3.setDescription("test description 2");
-		timeBlock3.setBeginTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse("2021-01-21T03:00:01"));
-		timeBlock3.setEndTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse("2021-01-21T10:00:10"));
+		timeBlock3.setBeginTime(LocalDateTime.parse("2021-01-21T03:00:01", DateTimeFormatter.ISO_DATE_TIME));
+		timeBlock3.setEndTime(LocalDateTime.parse("2021-01-21T10:00:10", DateTimeFormatter.ISO_DATE_TIME));
 		timeBlock3.setPlanInterval(20);
 		timeBlock3.setComment("test common 3");
 		timeBlock3 = timeBlockRepository.save(timeBlock3);
@@ -185,6 +189,7 @@ public class TimeBlockControllerTests {
 		generatedIdList.add(timeBlock3.getId());
 
 		ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(new JavaTimeModule());
 
 		String resultStr = this.mockMvc
 				.perform(get("/api/productivity/u1/time_block").param("date", "2021-01-22")
@@ -204,9 +209,9 @@ public class TimeBlockControllerTests {
 		assertThat(timeBlockList.get(0).getCategory()).isEqualTo(timeBlock2.getCategory());
 		assertThat(timeBlockList.get(0).getTarget()).isEqualTo(timeBlock2.getTarget());
 		assertThat(timeBlockList.get(0).getDescription()).isEqualTo(timeBlock2.getDescription());
-		assertThat(timeBlockList.get(0).getBeginTime().getTime()).isEqualTo(timeBlock2.getBeginTime().getTime());
+		assertThat(timeBlockList.get(0).getBeginTime()).isEqualTo(timeBlock2.getBeginTime());
 		assertThat(timeBlockList.get(0).getPlanInterval()).isEqualTo(timeBlock2.getPlanInterval());
-		assertThat(timeBlockList.get(0).getEndTime().getTime()).isEqualTo(timeBlock2.getEndTime().getTime());
+		assertThat(timeBlockList.get(0).getEndTime()).isEqualTo(timeBlock2.getEndTime());
 		assertThat(timeBlockList.get(0).getComment()).isNull();
 
 		resultStr = this.mockMvc
@@ -225,16 +230,16 @@ public class TimeBlockControllerTests {
 		assertThat(timeBlockList.get(0).getCategory()).isEqualTo(timeBlock3.getCategory());
 		assertThat(timeBlockList.get(0).getTarget()).isEqualTo(timeBlock3.getTarget());
 		assertThat(timeBlockList.get(0).getDescription()).isEqualTo(timeBlock3.getDescription());
-		assertThat(timeBlockList.get(0).getBeginTime().getTime()).isEqualTo(timeBlock3.getBeginTime().getTime());
+		assertThat(timeBlockList.get(0).getBeginTime()).isEqualTo(timeBlock3.getBeginTime());
 		assertThat(timeBlockList.get(0).getPlanInterval()).isEqualTo(timeBlock3.getPlanInterval());
-		assertThat(timeBlockList.get(0).getEndTime().getTime()).isEqualTo(timeBlock3.getEndTime().getTime());
+		assertThat(timeBlockList.get(0).getEndTime()).isEqualTo(timeBlock3.getEndTime());
 		assertThat(timeBlockList.get(0).getComment()).isEqualTo(timeBlock3.getComment());
 
 		assertThat(timeBlockList.get(1).getBlockId()).isEqualTo(timeBlock1.getId());
 		assertThat(timeBlockList.get(1).getCategory()).isEqualTo(timeBlock1.getCategory());
 		assertThat(timeBlockList.get(1).getTarget()).isEqualTo(timeBlock1.getTarget());
 		assertThat(timeBlockList.get(1).getDescription()).isEqualTo(timeBlock1.getDescription());
-		assertThat(timeBlockList.get(1).getBeginTime().getTime()).isEqualTo(timeBlock1.getBeginTime().getTime());
+		assertThat(timeBlockList.get(1).getBeginTime()).isEqualTo(timeBlock1.getBeginTime());
 		assertThat(timeBlockList.get(1).getPlanInterval()).isEqualTo(timeBlock1.getPlanInterval());
 		assertThat(timeBlockList.get(1).getEndTime()).isNull();
 		assertThat(timeBlockList.get(1).getComment()).isNull();
@@ -260,7 +265,7 @@ public class TimeBlockControllerTests {
 		timeBlock1.setCategory("test category 1");
 		timeBlock1.setTarget("test target 1");
 		timeBlock1.setDescription("test description 1");
-		timeBlock1.setBeginTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse("2021-01-21T10:01:01"));
+		timeBlock1.setBeginTime(LocalDateTime.parse("2021-01-21T10:01:01", DateTimeFormatter.ISO_DATE_TIME));
 		timeBlock1.setPlanInterval(25);
 		timeBlock1 = timeBlockRepository.save(timeBlock1);
 		generatedIdList.add(timeBlock1.getId());
@@ -270,8 +275,8 @@ public class TimeBlockControllerTests {
 		timeBlock2.setCategory("test category 2");
 		timeBlock2.setTarget("test target 2");
 		timeBlock2.setDescription("test description 2");
-		timeBlock2.setBeginTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse("2021-01-22T11:11:11"));
-		timeBlock2.setEndTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse("2021-01-22T12:00:00"));
+		timeBlock2.setBeginTime(LocalDateTime.parse("2021-01-22T11:11:11", DateTimeFormatter.ISO_DATE_TIME));
+		timeBlock2.setEndTime(LocalDateTime.parse("2021-01-22T12:00:00", DateTimeFormatter.ISO_DATE_TIME));
 		timeBlock2.setPlanInterval(30);
 		timeBlock2 = timeBlockRepository.save(timeBlock2);
 		// add无法添加结束时间等
@@ -282,8 +287,8 @@ public class TimeBlockControllerTests {
 		timeBlock3.setCategory("test category 3");
 		timeBlock3.setTarget("test target 3");
 		timeBlock3.setDescription("test description 2");
-		timeBlock3.setBeginTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse("2021-01-21T03:00:01"));
-		timeBlock3.setEndTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse("2021-01-21T10:00:10"));
+		timeBlock3.setBeginTime(LocalDateTime.parse("2021-01-21T03:00:01", DateTimeFormatter.ISO_DATE_TIME));
+		timeBlock3.setEndTime(LocalDateTime.parse("2021-01-21T10:00:10", DateTimeFormatter.ISO_DATE_TIME));
 		timeBlock3.setPlanInterval(20);
 		timeBlock3.setComment("test common 3");
 		timeBlock3 = timeBlockRepository.save(timeBlock3);
@@ -291,6 +296,7 @@ public class TimeBlockControllerTests {
 		generatedIdList.add(timeBlock3.getId());
 
 		ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(new JavaTimeModule());
 
 		String resultStr = this.mockMvc
 				.perform(get("/api/productivity/u1/time_block").param("start", "2021-01-22").param("end", "2021-01-23")
@@ -311,9 +317,9 @@ public class TimeBlockControllerTests {
 		assertThat(timeBlockList.get(0).getCategory()).isEqualTo(timeBlock2.getCategory());
 		assertThat(timeBlockList.get(0).getTarget()).isEqualTo(timeBlock2.getTarget());
 		assertThat(timeBlockList.get(0).getDescription()).isEqualTo(timeBlock2.getDescription());
-		assertThat(timeBlockList.get(0).getBeginTime().getTime()).isEqualTo(timeBlock2.getBeginTime().getTime());
+		assertThat(timeBlockList.get(0).getBeginTime()).isEqualTo(timeBlock2.getBeginTime());
 		assertThat(timeBlockList.get(0).getPlanInterval()).isEqualTo(timeBlock2.getPlanInterval());
-		assertThat(timeBlockList.get(0).getEndTime().getTime()).isEqualTo(timeBlock2.getEndTime().getTime());
+		assertThat(timeBlockList.get(0).getEndTime()).isEqualTo(timeBlock2.getEndTime());
 		assertThat(timeBlockList.get(0).getComment()).isNull();
 
 		resultStr = this.mockMvc
@@ -332,16 +338,16 @@ public class TimeBlockControllerTests {
 		assertThat(timeBlockList.get(0).getCategory()).isEqualTo(timeBlock3.getCategory());
 		assertThat(timeBlockList.get(0).getTarget()).isEqualTo(timeBlock3.getTarget());
 		assertThat(timeBlockList.get(0).getDescription()).isEqualTo(timeBlock3.getDescription());
-		assertThat(timeBlockList.get(0).getBeginTime().getTime()).isEqualTo(timeBlock3.getBeginTime().getTime());
+		assertThat(timeBlockList.get(0).getBeginTime()).isEqualTo(timeBlock3.getBeginTime());
 		assertThat(timeBlockList.get(0).getPlanInterval()).isEqualTo(timeBlock3.getPlanInterval());
-		assertThat(timeBlockList.get(0).getEndTime().getTime()).isEqualTo(timeBlock3.getEndTime().getTime());
+		assertThat(timeBlockList.get(0).getEndTime()).isEqualTo(timeBlock3.getEndTime());
 		assertThat(timeBlockList.get(0).getComment()).isEqualTo(timeBlock3.getComment());
 
 		assertThat(timeBlockList.get(1).getBlockId()).isEqualTo(timeBlock1.getId());
 		assertThat(timeBlockList.get(1).getCategory()).isEqualTo(timeBlock1.getCategory());
 		assertThat(timeBlockList.get(1).getTarget()).isEqualTo(timeBlock1.getTarget());
 		assertThat(timeBlockList.get(1).getDescription()).isEqualTo(timeBlock1.getDescription());
-		assertThat(timeBlockList.get(1).getBeginTime().getTime()).isEqualTo(timeBlock1.getBeginTime().getTime());
+		assertThat(timeBlockList.get(1).getBeginTime()).isEqualTo(timeBlock1.getBeginTime());
 		assertThat(timeBlockList.get(1).getPlanInterval()).isEqualTo(timeBlock1.getPlanInterval());
 		assertThat(timeBlockList.get(1).getEndTime()).isNull();
 		assertThat(timeBlockList.get(1).getComment()).isNull();
@@ -378,6 +384,7 @@ public class TimeBlockControllerTests {
 	@Test
 	public void getByDateWithoutDateAndEndParams() throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(new JavaTimeModule());
 
 		String resultStr = this.mockMvc
 				.perform(get("/api/productivity/u1/time_block").param("start", "2021-01-20")
