@@ -50,7 +50,6 @@ public class TimeBlockController {
 		if (date == null && (start == null || end == null)) {
 			return CommonResult.failed(ResultCode.VALIDATE_FAILED, "should have start and end without date");
 		}
-		logger.debug("get by Date params: " + start.toString() + "  " + end.toString());
 		List<TimeBlockDto> resList = new ArrayList<>();
 		List<TimeBlock> blockList = new ArrayList<>();
 		if (date != null) {
