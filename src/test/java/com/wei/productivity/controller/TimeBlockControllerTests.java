@@ -91,6 +91,77 @@ public class TimeBlockControllerTests {
 	}
 
 	@Test
+	public void addTimeBlockCategoryNull() throws Exception {
+		// No category
+		var timeBlockParam = new TimeBlockParam();
+		timeBlockParam.setTarget("test target");
+		timeBlockParam.setDescription("test description");
+		timeBlockParam.setBeginTime(LocalDateTime.parse("2021-01-22T00:00:00"));
+		timeBlockParam.setPlanInterval(25);
+
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(new JavaTimeModule());
+
+		String resultStr = this.mockMvc
+				.perform(post("/api/productivity/u1/time_block").contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.writeValueAsString(timeBlockParam)).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+		CommonResult<TimeBlockDto> commonResult = mapper.readValue(resultStr,
+				new TypeReference<CommonResult<TimeBlockDto>>() {
+				});
+		assertThat(commonResult.getCode()).isEqualTo(ResultCode.VALIDATE_FAILED.getCode());
+		assertThat(commonResult.getMessage()).isNotEmpty();
+	}
+
+	@Test
+	public void addTimeBlockCategoryEmpty() throws Exception {
+		// category empty
+		var timeBlockParam = new TimeBlockParam();
+		timeBlockParam.setCategory("");
+		timeBlockParam.setTarget("test target");
+		timeBlockParam.setDescription("test description");
+		timeBlockParam.setBeginTime(LocalDateTime.parse("2021-01-22T00:00:00"));
+		timeBlockParam.setPlanInterval(25);
+
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(new JavaTimeModule());
+
+		String resultStr = this.mockMvc
+				.perform(post("/api/productivity/u1/time_block").contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.writeValueAsString(timeBlockParam)).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+		CommonResult<TimeBlockDto> commonResult = mapper.readValue(resultStr,
+				new TypeReference<CommonResult<TimeBlockDto>>() {
+				});
+		assertThat(commonResult.getCode()).isEqualTo(ResultCode.VALIDATE_FAILED.getCode());
+		assertThat(commonResult.getMessage()).isNotEmpty();
+	}
+
+	@Test
+	public void addTimeBlockPlanIntervalOutOfRange() throws Exception {
+		//
+		var timeBlockParam = new TimeBlockParam();
+		timeBlockParam.setCategory("test category");
+		timeBlockParam.setTarget("test target");
+		timeBlockParam.setDescription("test description");
+		timeBlockParam.setBeginTime(LocalDateTime.parse("2021-01-22T00:00:00"));
+		timeBlockParam.setPlanInterval(-1);
+
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(new JavaTimeModule());
+
+		String resultStr = this.mockMvc
+				.perform(post("/api/productivity/u1/time_block").contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.writeValueAsString(timeBlockParam)).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+		var commonResult = mapper.readValue(resultStr,
+				new TypeReference<CommonResult<TimeBlockDto>>() {
+				});
+		assertThat(commonResult.getCode()).isEqualTo(ResultCode.VALIDATE_FAILED.getCode());
+		assertThat(commonResult.getMessage()).isNotEmpty();
+	}
+
+	@Test
 	public void updateNotExistBlockId() throws Exception {
 		var timeBlockParam = new TimeBlockParam();
 		timeBlockParam.setCategory("test category");
@@ -139,7 +210,7 @@ public class TimeBlockControllerTests {
 
 		String resultStr = this.mockMvc
 				.perform(post(String.format("/api/productivity/u1/time_block/u1/%s", timeBlock.getId()))
-						.contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(timeBlockParam))
+						.contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(updateTimeBlockParam))
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
 
@@ -149,6 +220,77 @@ public class TimeBlockControllerTests {
 
 		assertThat(commonResult.getCode()).isEqualTo(ResultCode.SUCCESS.getCode());
 		assertThat(commonResult.getData()).isNull();
+	}
+
+	@Test
+	public void updateExistBlockIdCategoryNull() throws Exception {
+		var timeBlockParam = new TimeBlockParam();
+		timeBlockParam.setCategory("test category");
+		timeBlockParam.setTarget("test target");
+		timeBlockParam.setDescription("test description");
+		timeBlockParam.setBeginTime(LocalDateTime.parse("2021-01-22T00:00:00"));
+		timeBlockParam.setPlanInterval(25);
+		var timeBlock = timeBlockService.add(timeBlockParam);
+		generatedIdList.add(timeBlock.getId());
+
+		var updateTimeBlockParam = new TimeBlockParam();
+		updateTimeBlockParam.setDescription("updated description");
+		updateTimeBlockParam.setTarget("updated target");
+		updateTimeBlockParam.setBeginTime(LocalDateTime.parse("2021-01-22T00:00:00"));
+		updateTimeBlockParam.setEndTime(LocalDateTime.parse("2021-01-23T00:00:00"));
+		updateTimeBlockParam.setPlanInterval(30);
+
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(new JavaTimeModule());
+
+		String resultStr = this.mockMvc
+				.perform(post(String.format("/api/productivity/u1/time_block/u1/%s", timeBlock.getId()))
+						.contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(updateTimeBlockParam))
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+
+		CommonResult<TimeBlockDto> commonResult = mapper.readValue(resultStr,
+				new TypeReference<CommonResult<TimeBlockDto>>() {
+				});
+
+		assertThat(commonResult.getCode()).isEqualTo(ResultCode.VALIDATE_FAILED.getCode());
+		assertThat(commonResult.getMessage()).isNotEmpty();
+	}
+
+	@Test
+	public void updateExistBlockIdCategoryEmpty() throws Exception {
+		var timeBlockParam = new TimeBlockParam();
+		timeBlockParam.setCategory("test category");
+		timeBlockParam.setTarget("test target");
+		timeBlockParam.setDescription("test description");
+		timeBlockParam.setBeginTime(LocalDateTime.parse("2021-01-22T00:00:00"));
+		timeBlockParam.setPlanInterval(25);
+		var timeBlock = timeBlockService.add(timeBlockParam);
+		generatedIdList.add(timeBlock.getId());
+
+		var updateTimeBlockParam = new TimeBlockParam();
+		updateTimeBlockParam.setCategory("");
+		updateTimeBlockParam.setDescription("updated description");
+		updateTimeBlockParam.setTarget("updated target");
+		updateTimeBlockParam.setBeginTime(LocalDateTime.parse("2021-01-22T00:00:00"));
+		updateTimeBlockParam.setEndTime(LocalDateTime.parse("2021-01-23T00:00:00"));
+		updateTimeBlockParam.setPlanInterval(30);
+
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(new JavaTimeModule());
+
+		String resultStr = this.mockMvc
+				.perform(post(String.format("/api/productivity/u1/time_block/u1/%s", timeBlock.getId()))
+						.contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(updateTimeBlockParam))
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+
+		CommonResult<TimeBlockDto> commonResult = mapper.readValue(resultStr,
+				new TypeReference<CommonResult<TimeBlockDto>>() {
+				});
+
+		assertThat(commonResult.getCode()).isEqualTo(ResultCode.VALIDATE_FAILED.getCode());
+		assertThat(commonResult.getMessage()).isNotEmpty();
 	}
 
 	@Test

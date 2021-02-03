@@ -11,8 +11,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -26,14 +28,14 @@ public class TimeBlockController {
 	private TimeBlockService timeBlockService;
 
 	@PostMapping(path = "")
-	public CommonResult<TimeBlockDto> addTimeBlock(@RequestBody TimeBlockParam timeBlockParam) {
+	public CommonResult<TimeBlockDto> addTimeBlock(@RequestBody @Validated TimeBlockParam timeBlockParam) {
 	    logger.debug(timeBlockParam.toString());
 		return CommonResult.success(TimeBlockDto.parseDomain(timeBlockService.add(timeBlockParam)));
 	}
 
 	@PostMapping(path = "/u1/{blockID}")
-	public CommonResult<TimeBlockDto> updateBlock(@PathVariable String blockID,
-			@RequestBody TimeBlockParam timeBlockParam) {
+	public CommonResult<TimeBlockDto> updateBlock(@PathVariable @Validated @NotNull String blockID,
+			@RequestBody @Validated TimeBlockParam timeBlockParam) {
 		try {
 			timeBlockService.update(blockID, timeBlockParam);
 		} catch (TimeBlockNotExistException e) {
