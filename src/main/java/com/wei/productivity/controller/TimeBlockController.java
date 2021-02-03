@@ -20,49 +20,82 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The type Time block controller.
+ */
 @RestController
 @RequestMapping("/api/productivity/u1/time_block")
 public class TimeBlockController {
-	Logger logger = LoggerFactory.getLogger(TimeBlockController.class);
-	@Autowired
-	private TimeBlockService timeBlockService;
+    /**
+     * The Logger.
+     */
+    Logger logger = LoggerFactory.getLogger(TimeBlockController.class);
+    @Autowired
+    private TimeBlockService timeBlockService;
 
-	@PostMapping(path = "")
-	public CommonResult<TimeBlockDto> addTimeBlock(@RequestBody @Validated TimeBlockParam timeBlockParam) {
-	    logger.debug(timeBlockParam.toString());
-		return CommonResult.success(TimeBlockDto.parseDomain(timeBlockService.add(timeBlockParam)));
-	}
+    /**
+     * Add time block common result.
+     *
+     * @param timeBlockParam
+     *            the time block param
+     * @return the common result
+     */
+    @PostMapping(path = "")
+    public CommonResult<TimeBlockDto> addTimeBlock(@RequestBody @Validated TimeBlockParam timeBlockParam) {
+        logger.debug(timeBlockParam.toString());
+        return CommonResult.success(TimeBlockDto.parseDomain(timeBlockService.add(timeBlockParam)));
+    }
 
-	@PostMapping(path = "/u1/{blockID}")
-	public CommonResult<TimeBlockDto> updateBlock(@PathVariable @Validated @NotNull String blockID,
-			@RequestBody @Validated TimeBlockParam timeBlockParam) {
-		try {
-			timeBlockService.update(blockID, timeBlockParam);
-		} catch (TimeBlockNotExistException e) {
-			return CommonResult.failed(e.getMessage());
-		}
-		return CommonResult.success();
-	}
+    /**
+     * Update block common result.
+     *
+     * @param blockID
+     *            the block id
+     * @param timeBlockParam
+     *            the time block param
+     * @return the common result
+     */
+    @PostMapping(path = "/u1/{blockID}")
+    public CommonResult<TimeBlockDto> updateBlock(@PathVariable @Validated @NotNull String blockID,
+        @RequestBody @Validated TimeBlockParam timeBlockParam) {
+        try {
+            timeBlockService.update(blockID, timeBlockParam);
+        } catch (TimeBlockNotExistException e) {
+            return CommonResult.failed(e.getMessage());
+        }
+        return CommonResult.success();
+    }
 
-	@GetMapping(path = "")
-	public CommonResult<List<TimeBlockDto>> getByDate(
-			@RequestParam(name = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-			@RequestParam(name = "start", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
-			@RequestParam(name = "end", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end) {
-		if (date == null && (start == null || end == null)) {
-			return CommonResult.failed(ResultCode.VALIDATE_FAILED, "should have start and end without date");
-		}
-		List<TimeBlockDto> resList = new ArrayList<>();
-		List<TimeBlock> blockList = new ArrayList<>();
-		if (date != null) {
-			blockList = timeBlockService.getByDate(date.atStartOfDay());
-		} else {
-			blockList = timeBlockService.getByDateRange(start.atStartOfDay(), end.atStartOfDay());
-		}
-		for (TimeBlock t : blockList) {
-			logger.debug("get time block: " + t.toString());
-			resList.add(TimeBlockDto.parseDomain(t));
-		}
-		return CommonResult.success(resList);
-	}
+    /**
+     * Gets by date.
+     *
+     * @param date
+     *            the date
+     * @param start
+     *            the start
+     * @param end
+     *            the end
+     * @return the by date
+     */
+    @GetMapping(path = "")
+    public CommonResult<List<TimeBlockDto>> getByDate(
+        @RequestParam(name = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+        @RequestParam(name = "start", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
+        @RequestParam(name = "end", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end) {
+        if (date == null && (start == null || end == null)) {
+            return CommonResult.failed(ResultCode.VALIDATE_FAILED, "should have start and end without date");
+        }
+        List<TimeBlockDto> resList = new ArrayList<>();
+        List<TimeBlock> blockList = new ArrayList<>();
+        if (date != null) {
+            blockList = timeBlockService.getByDate(date.atStartOfDay());
+        } else {
+            blockList = timeBlockService.getByDateRange(start.atStartOfDay(), end.atStartOfDay());
+        }
+        for (TimeBlock t : blockList) {
+            logger.debug("get time block: " + t.toString());
+            resList.add(TimeBlockDto.parseDomain(t));
+        }
+        return CommonResult.success(resList);
+    }
 }

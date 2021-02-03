@@ -18,63 +18,63 @@ import java.util.UUID;
 @Service
 public class TimeBlockServiceImpl implements TimeBlockService {
 
-	Logger logger = LoggerFactory.getLogger(TimeBlockServiceImpl.class);
+    Logger logger = LoggerFactory.getLogger(TimeBlockServiceImpl.class);
 
-	@Autowired
-	TimeBlockRepository timeBlockRepository;
+    @Autowired
+    TimeBlockRepository timeBlockRepository;
 
-	@Override
-	public String generate_block_id() {
-		return UUID.randomUUID().toString();
-	}
+    @Override
+    public String generate_block_id() {
+        return UUID.randomUUID().toString();
+    }
 
-	@Override
-	public Optional<TimeBlock> get(String block_id) {
-		return timeBlockRepository.findById(block_id);
-	}
+    @Override
+    public Optional<TimeBlock> get(String block_id) {
+        return timeBlockRepository.findById(block_id);
+    }
 
-	@Override
-	public List<TimeBlock> getByDate(LocalDateTime date) {
-		LocalDateTime endDate = date.plusDays(1);
-		return timeBlockRepository.findByBeginTime(date, endDate);
-	}
+    @Override
+    public List<TimeBlock> getByDate(LocalDateTime date) {
+        LocalDateTime endDate = date.plusDays(1);
+        return timeBlockRepository.findByBeginTime(date, endDate);
+    }
 
-	@Override
-	public List<TimeBlock> getByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
-		logger.debug("timeBlockParam begin time: " + startDate.toString());
-		logger.debug("timeBlock begin time: " + endDate.toString());
-		return timeBlockRepository.findByBeginTime(startDate, endDate);
-	}
+    @Override
+    public List<TimeBlock> getByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
+        logger.debug("timeBlockParam begin time: " + startDate.toString());
+        logger.debug("timeBlock begin time: " + endDate.toString());
+        return timeBlockRepository.findByBeginTime(startDate, endDate);
+    }
 
-	@Override
-	public TimeBlock add(TimeBlockParam timeBlockParam) {
-		var block = new TimeBlock();
-		block.setId(generate_block_id());
-		block.setCategory(timeBlockParam.getCategory());
-		block.setTarget(timeBlockParam.getTarget());
-		block.setDescription(timeBlockParam.getDescription());
-		block.setBeginTime(timeBlockParam.getBeginTime());
-		block.setPlanInterval(timeBlockParam.getPlanInterval());
-		logger.debug("timeBlockParam begin time: " + timeBlockParam.getBeginTime().toString());
-		logger.debug("timeBlock begin time: " + block.getBeginTime().toString());
-		return timeBlockRepository.save(block);
-	}
+    @Override
+    public TimeBlock add(TimeBlockParam timeBlockParam) {
+        var block = new TimeBlock();
+        block.setId(generate_block_id());
+        block.setCategory(timeBlockParam.getCategory());
+        block.setTarget(timeBlockParam.getTarget());
+        block.setDescription(timeBlockParam.getDescription());
+        block.setBeginTime(timeBlockParam.getBeginTime());
+        block.setPlanInterval(timeBlockParam.getPlanInterval());
+        logger.debug("timeBlockParam begin time: " + timeBlockParam.getBeginTime().toString());
+        logger.debug("timeBlock begin time: " + block.getBeginTime().toString());
+        return timeBlockRepository.save(block);
+    }
 
-	@Override
-	public TimeBlock update(String blockID, TimeBlockParam timeBlockParam) throws TimeBlockNotExistException {
-		Optional<TimeBlock> block = timeBlockRepository.findById(blockID);
-		if (block.isPresent()) {
-			TimeBlock blockObj = block.get();
-			blockObj.setCategory(timeBlockParam.getCategory());
-			blockObj.setTarget(timeBlockParam.getTarget());
-			blockObj.setDescription(timeBlockParam.getDescription());
-			blockObj.setBeginTime(timeBlockParam.getBeginTime());
-			blockObj.setEndTime(timeBlockParam.getEndTime());
-			blockObj.setPlanInterval(timeBlockParam.getPlanInterval());
-			blockObj.setComment(timeBlockParam.getComment());
-			return timeBlockRepository.save(blockObj);
-		} else {
-			throw new TimeBlockNotExistException(blockID);
-		}
-	}
+    @Override
+    public TimeBlock update(String blockID, TimeBlockParam timeBlockParam) throws TimeBlockNotExistException {
+        Optional<TimeBlock> block = timeBlockRepository.findById(blockID);
+        if (block.isPresent()) {
+            TimeBlock blockObj = block.get();
+            blockObj.setCategory(timeBlockParam.getCategory());
+            blockObj.setTarget(timeBlockParam.getTarget());
+            blockObj.setDescription(timeBlockParam.getDescription());
+            blockObj.setBeginTime(timeBlockParam.getBeginTime());
+            blockObj.setEndTime(timeBlockParam.getEndTime());
+            blockObj.setPlanInterval(timeBlockParam.getPlanInterval());
+            blockObj.setComment(timeBlockParam.getComment());
+            return timeBlockRepository.save(blockObj);
+        } else {
+            throw new TimeBlockNotExistException(blockID);
+        }
+    }
 }

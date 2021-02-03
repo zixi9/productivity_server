@@ -5,7 +5,7 @@ package com.wei.productivity.common;
  */
 public interface IErrorCode {
 
-	int getCode();
+    int getCode();
 
-	String getMessage();
+    String getMessage();
 }
